@@ -29,7 +29,7 @@ module shift(input shift, clk, resetn, startn, correct_in,
 						line_5 <= 3'b000;
 						line_6 <= 3'b000;
 						end
-					else if(correct_input)
+					else if(correct_in)
 						// if it's the correct input the bottom line should be reset
 						line_6 <= 3'b000;
 					else if(shift) begin

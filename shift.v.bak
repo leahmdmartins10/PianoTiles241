@@ -1,0 +1,20 @@
+module shift(input shift, clk, resetn, startn, correct_in,
+				input [5:0] current_st,
+				output reg [2:0] line_0,
+				output reg [2:0] line_1,
+				output reg [2:0] line_2,
+				output reg [2:0] line_3,
+				output reg [2:0] line_4,
+				output reg [2:0] line_5,
+				output reg [2:0] line_6);
+				
+				reg [4:0] d;
+				initial d = 5'd21; // decimal value of 21 in a 5 bit signal
+				
+				always @(posedge clk) begin
+					if(d == 5'b00000)
+						d <= 5'b00001;
+					else
+						d <= {d[3:0], d[4] ^ d[3]};
+				end
+				

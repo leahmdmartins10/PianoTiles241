@@ -1,0 +1,29 @@
+module colorBlocking(input clk, resetn, startn, reset_Screen_Done, draw_done, wait_done,
+								check_input_done, correct, incorrect, correct_done, incorrect_input_done,
+								color_line_done,
+								input [5:0] offset,
+								input [2:0] line_6,
+								
+								output reg reset_screen_go,
+								draw_go,
+								wait_go,
+								edge_go,
+								offset_increase,
+								check_input_go, 
+								correct_go,
+								incorrect_input_go, 
+								color_line_go,
+								
+								output reg [5:0] current_st);
+								
+								reg [5:0] next_st;
+								
+								localparam WAIT_AT_START = 5'd0,
+													RESET_SCREEN = 5'd1,
+														CHECK_INPUT = 5'd
+												DETECT_EDGE = 5'd2,
+													CHECK_EDGE = 5'd
+												EDGE = 5'd3,
+													EDGE_FAIL = 5
+												
+endmodule
