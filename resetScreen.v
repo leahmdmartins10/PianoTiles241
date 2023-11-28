@@ -16,8 +16,8 @@ module resetScreen(input clock, reset_screen_go,
 							if(!reset_screen_go) begin
 								x = init_x - 1'b1;
 								y = init_y;
-								color = initial_c;
-								resetdone = 1'b0;
+								color = initialCol;
+								resetDone = 1'b0;
 								vga_en = 1'b0;
 								end
 							else begin
@@ -27,10 +27,10 @@ module resetScreen(input clock, reset_screen_go,
 										resetDone = 1'b1; // it's reset the whole screen
 									else
 										x = init_x;
-										y += 1'b1; // incrementing y, traversing pixel by pixel
+										y = y + 1'b1; // incrementing y, traversing pixel by pixel
 									end
 								else
-									x += 1'b1; // incrementing x, traversing pixel by pixel
+									x = x + 1'b1; // incrementing x, traversing pixel by pixel
 								end
 							end
 endmodule

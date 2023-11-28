@@ -37,7 +37,7 @@ module draw_cont(input clock, resetn, startn, draw_go,
 						erase_4y,
 						erase_5y,
 						
-						input [5:0] main_St,
+						input [5:0] main_st,
 						output reg isDrawingDone, vga_en,
 						output reg [5:0] draw_en, erase_en,
 						
@@ -211,7 +211,7 @@ module draw_cont(input clock, resetn, startn, draw_go,
 				
 				// setting the current state
 				always @(posedge clock) begin //state FF
-					if(!resetn | (!startn & main_St == 5'd0))
+					if(!resetn | (!startn & main_st == 5'd0))
 						current_St <= WAIT;
 					else
 						current_St <= next_st;

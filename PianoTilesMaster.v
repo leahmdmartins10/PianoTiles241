@@ -21,9 +21,9 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 								wire startn;
 								
 								assign resetn = SW[0]; // this will need to be changed for when the inputs are sent
-								assign startn = KEY[0] | KEY [1] | // this will need to be changed for when the inputs are sent
+								assign startn = KEY[0] | KEY [1] | KEY[2] | KEY[3]; // this will need to be changed for when the inputs are sent
 								
-								wire reset_screen_done, drawdone, wait_done,
+								wire  reset_screen_done, drawdone, wait_done,
 										reset_screen_go, draw_go, wait_go, edge_go, offset_inc,
 										check_input_done,
 										correct,
@@ -42,7 +42,7 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 							// vga adpater inputs
 							
 							wire vga_en;
-							wire draw_en, reset_en;
+							wire draw_vga_en, reset_en;
 							assign vga_en = draw_vga_en | reset_vga_en | color_line_go | correct_go | incorrect_input_go;
 							
 							reg [8:0] x;
@@ -50,7 +50,7 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 							reg [7:0] y;
 							wire [7:0] y_draw, y_reset, y_line, y_correct, y_incorrect;
 							
-							wire [2:0] color;
+							reg [2:0] color;
 							wire [2:0] color_draw, color_reset;
 							
 							always @(*) begin
@@ -86,9 +86,9 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 								end
 							end
 							
-							vga_adapter VGA(.resetn(resetn)
+							vga_adapter VGA(.resetn(resetn),
 												 .clock(CLOCK_50),
-												 .color(color),
+												 .colour(color),
 												 .x(x),
 												 .y(y),
 												 .plot(vga_en),
@@ -97,23 +97,29 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 												 .VGA_B(VGA_B),
 												 .VGA_HS(VGA_HS),
 												 .VGA_VS(VGA_VS),
-												 .VGA_BLANK_N(VGA_BLANK_N),
-												 .VGA_SYNC_N(VGA_SYNC_N),
+												 .VGA_BLANK(VGA_BLANK_N),
+												 .VGA_SYNC(VGA_SYNC_N),
 												 .VGA_CLK(VGA_CLK));
 							defparam VGA.RESOLUTION = "320x240";
 							defparam VGA.MONOCHROME = "FALSE";
-							defparam VGA.BITS_PERCOLOR_CHANNEL = 1;
-							defparam VGA.BACKGROUND_IMAGE = "background.mf";
+							defparam VGA.BITS_PER_COLOUR_CHANNEL = 1;
+							defparam VGA.BACKGROUND_IMAGE = "background.mif";
 							
 							
 							wire [5:0] current_state;
 							wire [23:0] Q;
 							
+							/* controlModule(.clock(CLOCK_50),
+											  .resetn(resetn),
+											  .startn(startn),
+											  .reset_screen_done(reset_screen_done),
+											  .drawdone(drawdone), */
+							
 							all_draw d0(.clock(CLOCK_50),
 											.resetn(resetn),
 											.startn(startn),
 											.draw_go(draw_go),
-											.offset([5:0]),
+											.offset(offset[5:0]),
 											.line_0(line_0[2:0]),
 											.line_1(line_1[2:0]),
 											.line_2(line_2[2:0]),
@@ -121,9 +127,9 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 											.line_4(line_4[2:0]),
 											.line_5(line_5[2:0]),
 											.line_6(line_6[2:0]),
-											.main_state(current_state[5:0]),
-											.all_draw_done(drawdone),
-											.vga_enable(draw_vga_enable),
+											.main_st(current_state[5:0]),
+											.isDrawingDone(drawdone),
+											.vga_en(draw_vga_enable),
 											.xOutput(x_draw[8:0]),
 											.yOutput(y_draw[7:0]),
 											.colorOutput(color_draw[2:0]));
@@ -134,7 +140,7 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 													.y(y_reset[7:0]),
 													.color(color_reset[2:0]),
 													.vga_en(reset_vga_en),
-													.resetdone(reset_screen_done));
+													.resetDone(reset_screen_done));
 							
 							shift	shiftbitch(.shift(edge_go),
 												  .clk(CLOCK_50),
@@ -152,7 +158,7 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 							
 							// missing checking input
 							
-							scoreRegister scoreboard(.clock(CLOCK_50),
+							score scoreboard(.clock(CLOCK_50),
 															 .resetn(resetn),
 															 .startn(startn),
 															 .current_state(current_state),
