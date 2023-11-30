@@ -86,7 +86,6 @@ module controlModule(input clock,
 									RESET_SCREEN: reset_screen_go = 1'b1;
 									CHECK_INPUT: check_input_go = 1'b1;
 									CORRECT_INPUT: correct_go = 1'b1;
-									INCORRECT_INPUT: incorrect_input_go = 1'b1;
 									
 									EDGE: edge_go = 1'b1;
 									EDGE_FAIL: color_line_go = 1'b1;
