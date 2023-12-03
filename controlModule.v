@@ -1,4 +1,4 @@
-module controlModule(input clock,
+module controlModule(input clk,
 								resetn,
 								startn,
 								reset_screen_done,
@@ -22,9 +22,12 @@ module controlModule(input clock,
 											  correct_go,
 											  incorrect_input_go,
 											  color_line_go,
+											  light
 								
-								output reg [5:0] current_state);
-								
+//								output reg [5:0] current_state
+							);
+																 reg [5:0] current_state;
+
 								reg [5:0] next_st;
 								
 								localparam WAIT_FOR_START = 5'd0,
@@ -40,32 +43,34 @@ module controlModule(input clock,
 											  WAIT_FOR_NEXT = 5'd5,
 											  NEXT_ROW = 5'd6;
 								
-								initial current_state = WAIT_FOR_START;
+								initial current_state <= WAIT_FOR_START;
 								
 								always @(*) begin: stateTable
 									case(current_state)
-										WAIT_FOR_START: next_st = startn ? WAIT_FOR_START : RESET_SCREEN;
-										RESET_SCREEN: next_st = reset_screen_done ? CHECK_INPUT : RESET_SCREEN;
+										WAIT_FOR_START: next_st <= (startn == 1'b0) ? RESET_SCREEN : WAIT_FOR_START;
+										RESET_SCREEN: next_st <= reset_screen_done ? CHECK_INPUT : RESET_SCREEN;
 										CHECK_INPUT: begin
-											if(check_input_done & correct)
-												next_st = CORRECT_INPUT;
-											else if(check_input_done & incorrect)
-												next_st = INCORRECT_INPUT;
+											if(startn == 1'b0)
+												next_st <= DRAW_EN;
+											else if(check_input_done && correct)
+												next_st <= CORRECT_INPUT;
+											else if(check_input_done && incorrect)
+												next_st <= INCORRECT_INPUT;
 											else if(check_input_done)
-												next_st = DETECT_EDGE;
+												next_st <= DETECT_EDGE;
 											else
-												next_st = CHECK_INPUT;
+												next_st <= CHECK_INPUT;
 											end
-									  CORRECT_INPUT: next_st = correct_done ? DETECT_EDGE : CORRECT_INPUT;
-									  INCORRECT_INPUT: next_st = incorrect_input_done ? WAIT_FOR_START : INCORRECT_INPUT;
-									  DETECT_EDGE: next_st = (offset == 40) ? EDGE_CHECK : DRAW_EN;
-									  EDGE_CHECK: next_st = (line_6 == 3'b000) ? EDGE : EDGE_FAIL;
-									  EDGE: next_st = DRAW_EN;
-									  EDGE_FAIL: next_st = color_line_done ? WAIT_FOR_START : EDGE_FAIL;
-									  DRAW_EN: next_st = drawdone ? WAIT_FOR_NEXT : DRAW_EN;
-									  WAIT_FOR_NEXT: next_st = wait_done ? NEXT_ROW : WAIT_FOR_NEXT;
-									  NEXT_ROW: next_st = CHECK_INPUT;
-								 default: next_st = WAIT_FOR_START;
+									  CORRECT_INPUT: next_st <= correct_done ? DETECT_EDGE : CORRECT_INPUT;
+									  INCORRECT_INPUT: next_st <= incorrect_input_done ? WAIT_FOR_START : INCORRECT_INPUT;
+									  DETECT_EDGE: next_st <= (offset == 6'b101000) ? EDGE_CHECK : DRAW_EN;
+									  EDGE_CHECK: next_st <= (line_6 == 3'b000) ? EDGE : EDGE_FAIL;
+									  EDGE: next_st <= DRAW_EN;
+									  EDGE_FAIL: next_st <= color_line_done ? WAIT_FOR_START : EDGE_FAIL;
+									  DRAW_EN: next_st <= drawdone ? WAIT_FOR_NEXT : DRAW_EN;
+									  WAIT_FOR_NEXT: next_st <= wait_done ? NEXT_ROW : WAIT_FOR_NEXT;
+									  NEXT_ROW: next_st <= CHECK_INPUT;
+								 default: next_st <= WAIT_FOR_START;
 								 endcase
 							 end
 							 
@@ -83,9 +88,15 @@ module controlModule(input clock,
 								 color_line_go = 1'b0;
 								 
 								 case(current_state)
-									RESET_SCREEN: reset_screen_go = 1'b1;
-									CHECK_INPUT: check_input_go = 1'b1;
-									CORRECT_INPUT: correct_go = 1'b1;
+									RESET_SCREEN: begin reset_screen_go = 1'b1;
+										light = 1'b1; end
+									CHECK_INPUT: begin 
+									check_input_go = 1'b1;
+										light = 1'b0; end
+
+									CORRECT_INPUT: 
+									correct_go = 1'b1;
+									
 									INCORRECT_INPUT: incorrect_input_go = 1'b1;
 									
 									EDGE: edge_go = 1'b1;
@@ -97,7 +108,7 @@ module controlModule(input clock,
 								endcase
 							end
 							
-							always @(posedge clock) begin: stateFlipFlop
+							always @(posedge clk) begin: stateFlipFlop
 								if(!resetn)
 									current_state <= WAIT_FOR_START;
 								else

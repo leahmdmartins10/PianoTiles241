@@ -1,4 +1,4 @@
-module all_draw(input clk, resetn, startn, draw_go,
+module all_draw(input clock, resetn, startn, draw_go,
 						input [5:0] offset,
 						
 						input [2:0] line_0,
@@ -8,7 +8,7 @@ module all_draw(input clk, resetn, startn, draw_go,
 										line_4,
 										line_5,
 										line_6,
-						input [5:0] main_St,
+						input [5:0] main_st,
 						output isDrawingDone, vga_en,
 						output [8:0] xOutput,
 						output [7:0] yOutput,
@@ -53,7 +53,7 @@ module all_draw(input clk, resetn, startn, draw_go,
 						
 						wire [4:0] current_state;
 						
-						draw_cont c0(.clock(clk), 
+						draw_cont c0(.clock(clock), 
 										 .resetn(resetn), 
 										 .startn(startn), 
 										 .draw_go(draw_go), 
@@ -85,7 +85,7 @@ module all_draw(input clk, resetn, startn, draw_go,
 										 .erase_3y(erase_3x[7:0]),
 										 .erase_4y(erase_4x[7:0]),
 										 .erase_5y(erase_5x[7:0]),
-										 .main_St(main_St[5:0]),
+										 .main_st(main_st[5:0]),
 										 
 										 .isDrawingDone(isDrawingDone),
 										 .vga_en(vga_en),

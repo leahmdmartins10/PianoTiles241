@@ -1,4 +1,4 @@
-module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
+module pianoTilesDrawMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 								VGA_CLK, VGA_HS, VGA_VS, VGA_BLANK_N, VGA_SYNC_N, //for the VGA adapter
 								VGA_R, VGA_G, VGA_B); //for the VGA adapter
 								
@@ -53,35 +53,35 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 							reg [2:0] color;
 							wire [2:0] color_draw, color_reset;
 							
-							always @(*) begin
+							always @(posedge CLOCK_50) begin // originally was *, and block statements
 								if(reset_screen_go) begin
-									x = x_reset;
-									y = y_reset;
-									color = color_reset;
+									x <= x_reset;
+									y <= y_reset;
+									color <= color_reset;
 								end
 								else if(draw_go) begin
-									x = x_draw;
-									y = y_draw;
+									x <= x_draw;
+									y <= y_draw;
 									color = color_draw;
 								end
 								else if(color_line_go) begin
-									x = x_line;
-									y = y_line;
+									x <= x_line;
+									y <= y_line;
 									color = 3'b100;
 								end
 								else if(correct_go) begin
-									x = x_correct;
-									y = y_correct;
+									x <= x_correct;
+									y <= y_correct;
 									color = 3'b111;
 								end
 								else if(incorrect_input_go) begin
-									x = x_incorrect;
-									y = y_incorrect;
+									x <= x_incorrect;
+									y <= y_incorrect;
 									color = 3'b100;
 								end
 								else begin
-									x = 1;
-									y = 0;
+									x <= 1;
+									y <= 0;
 									color = 3'b111;
 								end
 							end
@@ -109,30 +109,6 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 							wire [5:0] current_state;
 							wire [23:0] Q;
 							
-							controlModule(.clock(CLOCK_50),
-											  .resetn(resetn),
-											  .startn(startn),
-											  .reset_screen_done(reset_screen_done),
-											  .drawdone(drawdone), .wait_done(wait_done),
-											  .check_input_done(check_input_done),
-											  .correct(correct), .incorrect(incorrect),
-											  .correct_done(correct_done),
-											  .incorrect_input_done(incorrect_input_done),
-											  .color_line_done(color_line_done),
-											  .offset(offset[5:0]),
-											  .line_6(line_6[2:0]),
-											  
-											  .reset_screen_go(reset_screen_go),
-											  .draw_go(draw_go),
-											  .wait_go(wait_go),
-											  .edge_go(edge_go),
-											  .offset_increase(offset_increase),
-											  .check_input_go(check_input_go),
-											  .correct_go(correct_go),
-											  .incorrect_input_go(incorrect_input_go),
-											  .color_line_go(color_line_go),
-											  .current_state(current_state[5:0]));
-							
 							all_draw d0(.clock(CLOCK_50),
 											.resetn(resetn),
 											.startn(startn),
@@ -147,69 +123,8 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX5,
 											.line_6(line_6[2:0]),
 											.main_st(current_state[5:0]),
 											.isDrawingDone(drawdone),
-											.vga_en(draw_vga_enable),
+											.vga_en(draw_vga_en),
 											.xOutput(x_draw[8:0]),
 											.yOutput(y_draw[7:0]),
 											.colorOutput(color_draw[2:0]));
-											
-							resetScreen reset(.clock(CLOCK_50),
-													.reset_screen_go(reset_screen_go),
-													.x(x_reset[8:0]),
-													.y(y_reset[7:0]),
-													.color(color_reset[2:0]),
-													.vga_en(reset_vga_en),
-													.resetDone(reset_screen_done));
-							
-							shift	shiftbitch(.shift(edge_go),
-												  .clk(CLOCK_50),
-												  .resetn(resetn),
-												  .startn(startn),
-												  .correct_in(correct_done),
-												  .current_st(current_state[5:0]),
-												  .line_0(line_0[2:0]),
-												  .line_1(line_1[2:0]),												  
-												  .line_2(line_2[2:0]),
-												  .line_3(line_3[2:0]),	
-												  .line_4(line_4[2:0]),
-												  .line_5(line_5[2:0]),		
-												  .line_6(line_6[2:0]));									  
-							
-							counterOffset countmyass(.clock(CLOCK_50),
-															 .resetn(resetn),
-															 .startn(startn),
-															 .current_state(current_state[5:0]),
-															 .edge_go(edge_go),
-															 .offset_increase(offset_increase),
-															 .offset(offset[5:0));
-							
-							colorLine lineofass(.clock(CLOCK_50),
-													  .color_line_go(color_line_go),
-													  .line_6(line_6[2:0]),
-													  .color_line_done(color_line_done),
-													  .x(x_line[8:0]),
-													  .y(y_line[7:0]));
-							
-							score scoreboard(.clock(CLOCK_50),
-															 .resetn(resetn),
-															 .startn(startn),
-															 .current_state(current_state),
-															 .increment(correct_done),
-															 .HEX0(HEX0[6:0]),
-															 .HEX1(HEX1[6:0]),
-															 .HEX2(HEX2[6:0]),
-															 .HEX3(HEX3[6:0]),
-															 .HEX4(HEX4[6:0]),
-															 .HEX5(HEX5[6:0]),
-															 .Q(Q[23:0]));
-							
-							
-							
-							
-							
-							
-							
-							
-							
 endmodule
-
-

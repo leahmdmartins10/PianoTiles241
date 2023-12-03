@@ -68,7 +68,7 @@ module draw_cont(input clock, resetn, startn, draw_go,
 						// initializing the beginning state as "WAIT"
 						initial current_St = WAIT;
 						
-						always @(*)
+						always @(posedge clock)
 						begin: stateTable// start of state_table
 							case (current_St)
 								WAIT: next_st = draw_go ? ERASE_0 : WAIT;

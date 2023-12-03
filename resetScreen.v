@@ -12,25 +12,29 @@ module resetScreen(input clock, reset_screen_go,
 							
 							reg counterEn;
 							
-							always @(posedge clock) begin
-							if(!reset_screen_go) begin
-								x = init_x - 1'b1;
-								y = init_y;
-								color = initialCol;
-								resetDone = 1'b0;
-								vga_en = 1'b0;
+							always @(posedge clock) 
+							begin
+								if(!reset_screen_go) 
+								begin
+									x <= init_x - 1'b1;
+									y <= init_y;
+									color <= initialCol;
+									resetDone <= 1'b0;
+									vga_en <= 1'b0;
 								end
-							else begin
-								vga_en = 1'b1;
-								if(x == MAX_X) begin
-									if(y == MAX_Y)
-										resetDone = 1'b1; // it's reset the whole screen
-									else
-										x = init_x;
-										y = y + 1'b1; // incrementing y, traversing pixel by pixel
+							else 
+								begin
+									vga_en <= 1'b1;
+									if(x == MAX_X) begin
+										if(y == MAX_Y)
+										resetDone <= 1'b1; // it's reset the whole screen
+									else begin
+										x <= init_x;
+										y <= y + 1'b1; // incrementing y, traversing pixel by pixel
+										end
 									end
 								else
-									x = x + 1'b1; // incrementing x, traversing pixel by pixel
+									x <= x + 1'b1; // incrementing x, traversing pixel by pixel
 								end
 							end
 endmodule
