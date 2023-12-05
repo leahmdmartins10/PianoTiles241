@@ -147,7 +147,7 @@ module PianoTilesMaster(CLOCK_50, KEY, SW, LEDR, HEX0, HEX1, HEX2, HEX3, HEX4, H
 											.yOutput(y_draw[7:0]),
 											.colorOutput(color_draw[2:0]));
 																
-							controlModule(.clk(CLOCK_50),
+							controlModule CONTROLME(.clk(CLOCK_50),
 											  .resetn(resetn),
 											  .startn(startn),
 											  .reset_screen_done(reset_screen_done),
