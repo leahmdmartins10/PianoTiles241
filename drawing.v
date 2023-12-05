@@ -51,18 +51,18 @@ module draw_cont(input clock, resetn, startn, draw_go,
 						// initialize all of the states
 						
 						localparam  WAIT = 4'd0,
-										ERASE_0 = 4'd1,
-										DRAW_0 = 4'd2,
-										ERASE_1 = 4'd3,
-										DRAW_1 = 4'd4,
-										ERASE_2 = 4'd5,
-										DRAW_2 = 4'd6,
-										ERASE_3 = 4'd7,
-										DRAW_3 = 4'd8,
-										ERASE_4 = 4'd9,
-										DRAW_4 = 4'd10,
-										ERASE_5 = 4'd11,
-										DRAW_5 = 4'd12,
+										ERASELINE_0 = 4'd1,
+										DRAW_LINE0 = 4'd2,
+										ERASELINE_1 = 4'd3,
+										DRAW_LINE1 = 4'd4,
+										ERASELINE_2 = 4'd5,
+										DRAW_LINE2 = 4'd6,
+										ERASELINE_3 = 4'd7,
+										DRAW_LINE3 = 4'd8,
+										ERASELINE_4 = 4'd9,
+										DRAW_LINE4 = 4'd10,
+										ERASELINE_5 = 4'd11,
+										DRAW_LINE5 = 4'd12,
 										DONE = 4'd13;
 
 						// initializing the beginning state as "WAIT"
@@ -71,25 +71,25 @@ module draw_cont(input clock, resetn, startn, draw_go,
 						always @(posedge clock)
 						begin: stateTable// start of state_table
 							case (current_St)
-								WAIT: next_st = draw_go ? ERASE_0 : WAIT;
+								WAIT: next_st = draw_go ? ERASELINE_0 : WAIT;
 								
-								ERASE_0: next_st = erase_done[0] ? DRAW_0 : ERASE_0;
-								DRAW_0: next_st = drawdone[0] ? ERASE_1 : DRAW_0;
+								ERASELINE_0: next_st = erase_done[0] ? DRAW_LINE0 : ERASELINE_0;
+								DRAW_LINE0: next_st = drawdone[0] ? ERASELINE_1 : DRAW_LINE0;
 								
-								ERASE_1: next_st = erase_done[1] ? DRAW_1: ERASE_1;
-								DRAW_1: next_st = drawdone[1] ? ERASE_2 : DRAW_1;
+								ERASELINE_1: next_st = erase_done[1] ? DRAW_LINE1: ERASELINE_1;
+								DRAW_LINE1: next_st = drawdone[1] ? ERASELINE_2 : DRAW_LINE1;
 								
-								ERASE_2: next_st = erase_done[2] ? DRAW_2: ERASE_2;								
-								DRAW_2: next_st = drawdone[2] ? ERASE_3 : DRAW_2;
+								ERASELINE_2: next_st = erase_done[2] ? DRAW_LINE2: ERASELINE_2;								
+								DRAW_LINE2: next_st = drawdone[2] ? ERASELINE_3 : DRAW_LINE2;
 								
-								ERASE_3: next_st = erase_done[3] ? DRAW_3 : ERASE_3;
-								DRAW_3: next_st = drawdone[3] ? ERASE_4: DRAW_3;
+								ERASELINE_3: next_st = erase_done[3] ? DRAW_LINE3 : ERASELINE_3;
+								DRAW_LINE3: next_st = drawdone[3] ? ERASELINE_4: DRAW_LINE3;
 								
-								ERASE_4: next_st = erase_done[4] ? DRAW_4 : ERASE_4;
-								DRAW_4: next_st = drawdone[4] ? ERASE_5 : DRAW_4;
+								ERASELINE_4: next_st = erase_done[4] ? DRAW_LINE4 : ERASELINE_4;
+								DRAW_LINE4: next_st = drawdone[4] ? ERASELINE_5 : DRAW_LINE4;
 								
-								ERASE_5: next_st = erase_done[5] ? DRAW_5: ERASE_5;
-								DRAW_5: next_st = drawdone[5] ? DONE : DRAW_5;
+								ERASELINE_5: next_st = erase_done[5] ? DRAW_LINE5: ERASELINE_5;
+								DRAW_LINE5: next_st = drawdone[5] ? DONE : DRAW_LINE5;
 								
 								DONE: next_st = draw_go ? DONE : WAIT;
 								
@@ -104,7 +104,7 @@ module draw_cont(input clock, resetn, startn, draw_go,
 						erase_en = 6'b000000;
 						
 						case (current_St)
-							ERASE_0 : begin
+							ERASELINE_0 : begin
 								erase_en[0] = 1'b1;
 								xOutput = erase_0x;
 								yOutput = erase_0y;
@@ -112,7 +112,7 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 								
 							end
-							DRAW_0 : begin
+							DRAW_LINE0 : begin
 								draw_en[0] = 1'b1;
 								xOutput = draw_0x;
 								yOutput = draw_0y;
@@ -120,14 +120,14 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 						   end
 							
-							ERASE_1 : begin
+							ERASELINE_1 : begin
 								erase_en[1] = 1'b1;
 								xOutput = erase_1x;
 								yOutput = erase_1y;
 								color_out = {erase_color[1], erase_color[1], erase_color[1]};
 								vga_en = 1'b1;
 							end
-							DRAW_1 : begin
+							DRAW_LINE1 : begin
 								draw_en[1] = 1'b1;
 								xOutput = draw_1x;
 								yOutput = draw_1y;
@@ -135,14 +135,14 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 						   end
 							
-							ERASE_2 : begin
+							ERASELINE_2 : begin
 								erase_en[2] = 1'b1;
 								xOutput = erase_2x;
 								yOutput = erase_2y;
 								color_out = {erase_color[2], erase_color[2], erase_color[2]};
 								vga_en = 1'b1;
 							end
-							DRAW_2 : begin
+							DRAW_LINE2 : begin
 								draw_en[2] = 1'b1;
 								xOutput = draw_2x;
 								yOutput = draw_2y;
@@ -150,14 +150,14 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 							end
 							
-							ERASE_3 : begin
+							ERASELINE_3 : begin
 								erase_en[3] = 1'b1;
 								xOutput = erase_3x;
 								yOutput = erase_1y;
 								color_out = {erase_color[3], erase_color[3], erase_color[3]};
 								vga_en = 1'b1;
 							end							
-							DRAW_3 : begin
+							DRAW_LINE3 : begin
 								draw_en[3] = 1'b1;
 								xOutput = draw_3x;
 								yOutput = draw_3y;
@@ -165,14 +165,14 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 						   end
 							
-							ERASE_4 : begin
+							ERASELINE_4 : begin
 								erase_en[4] = 1'b1;
 								xOutput = erase_4x;
 								yOutput = erase_4y;
 								color_out = {erase_color[4], erase_color[4], erase_color[4]};
 								vga_en = 1'b1;
 							end
-							DRAW_4 : begin
+							DRAW_LINE4 : begin
 								draw_en[4] = 1'b1;
 								xOutput = draw_4x;
 								yOutput = draw_4y;
@@ -180,14 +180,14 @@ module draw_cont(input clock, resetn, startn, draw_go,
 								vga_en = 1'b1;
 							end
 							
-							ERASE_5 : begin
+							ERASELINE_5 : begin
 								erase_en[5] = 1'b1;
 								xOutput = erase_5x;
 								yOutput = erase_5y;
 								color_out = {erase_color[5], erase_color[5], erase_color[5]};
 								vga_en = 1'b1;
 							end
-							DRAW_5 : begin
+							DRAW_LINE5 : begin
 								draw_en[5] = 1'b1;
 								xOutput = draw_5x;
 								yOutput = draw_5y;
