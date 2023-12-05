@@ -128,3 +128,13 @@ module pianoTilesDrawMaster(CLOCK_50, KEY, SW, HEX0, HEX1, HEX2, HEX3, HEX4, HEX
 											.yOutput(y_draw[7:0]),
 											.colorOutput(color_draw[2:0]));
 endmodule
+
+
+// REFERENCES:
+// <vga_adapter.v> from <lab 7 files>
+// <vga_control.v> from <lab 7 files>
+// <vga_address_translator> from <lab 7 files>
+// <vga_pll.v> from <lab 7 files
+// <PianoTiles> github from <https://github.com/caeliin/Piano-Tiles>
+// <PS/2 Controller> from <https://www.eecg.toronto.edu/~jayar/ece241_08F//AudioVideoCores/ps2/ps2.html>
+// <Audio Controller> from < https://www.eecg.toronto.edu/~jayar/ece241_08F//AudioVideoCores/audio/audio.html>
